@@ -1,0 +1,35 @@
+{
+  "name": "com.zstudio.uipathtween",
+  "version": "1.0.0",
+  "displayName": "UIPathTween",
+  "description": "WYSIWYG UGUI path animation. Drag waypoints and Bezier tangent handles in the Scene view; play along the path (arc-length constant speed) via PrimeTween. Optional UniTask async support.",
+  "unity": "6000.0",
+  "author": {
+    "name": "Z Studio"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/z-studio/UIPathTween.git"
+  },
+  "keywords": [
+    "UI",
+    "UGUI",
+    "Path",
+    "Tween",
+    "Bezier",
+    "CatmullRom",
+    "Animation",
+    "PrimeTween"
+  ],
+  "dependencies": {
+    "com.unity.ugui": "1.0.0",
+    "com.kyrylokuzyk.primetween": "1.4.5"
+  },
+  "samples": [
+    {
+      "displayName": "Demo",
+      "description": "Bezier S-curve fly-coin test scene with Play / Reset / Loop controls.",
+      "path": "Samples~/Demo"
+    }
+  ]
+}

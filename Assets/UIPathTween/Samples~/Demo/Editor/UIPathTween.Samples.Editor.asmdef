@@ -1,0 +1,27 @@
+{
+    "name": "UIPathTween.Samples.Editor",
+    "rootNamespace": "ZStudio",
+    "references": [
+        "UIPathTween",
+        "UIPathTween.Samples"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UIPATHTWEEN_UNITASK_SUPPORT"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.cysharp.unitask",
+            "expression": "",
+            "define": "UIPATHTWEEN_UNITASK_SUPPORT"
+        }
+    ],
+    "noEngineReferences": false
+}

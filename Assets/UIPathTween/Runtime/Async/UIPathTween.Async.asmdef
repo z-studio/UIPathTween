@@ -1,0 +1,26 @@
+{
+    "name": "UIPathTween.Async",
+    "rootNamespace": "ZStudio",
+    "references": [
+        "UIPathTween",
+        "UniTask",
+        "PrimeTween.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UIPATHTWEEN_UNITASK_SUPPORT"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.cysharp.unitask",
+            "expression": "",
+            "define": "UIPATHTWEEN_UNITASK_SUPPORT"
+        }
+    ],
+    "noEngineReferences": false
+}
