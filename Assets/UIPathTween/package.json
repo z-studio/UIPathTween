@@ -1,6 +1,6 @@
 {
   "name": "com.zstudio.uipathtween",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "displayName": "UIPathTween",
   "description": "WYSIWYG UGUI path animation. Drag waypoints and Bezier tangent handles in the Scene view; play along the path (arc-length constant speed) via PrimeTween. Optional UniTask async support.",
   "unity": "6000.0",
