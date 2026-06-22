@@ -76,8 +76,9 @@ namespace ZStudio.UIPathTween.Samples.Editor {
 
             var pathSo = new SerializedObject(pathTween);
             pathSo.FindProperty("m_Target").objectReferenceValue = coin;
-            pathSo.FindProperty("m_Duration").floatValue = 1.4f;
-            SetEnumByName(pathSo.FindProperty("m_Ease"), "InOutSine");
+            SerializedProperty tweenSettings = pathSo.FindProperty("m_TweenSettings");
+            tweenSettings.FindPropertyRelative("duration").floatValue = 1.4f;
+            SetEnumByName(tweenSettings.FindPropertyRelative("ease"), "InOutSine");
             pathSo.FindProperty("m_CurveMode").enumValueIndex = (int)EUIPathCurveMode.Bezier;
             pathSo.FindProperty("m_SamplesPerSegment").intValue = 24;
             pathSo.FindProperty("m_SnapToStartOnPlay").boolValue = true;

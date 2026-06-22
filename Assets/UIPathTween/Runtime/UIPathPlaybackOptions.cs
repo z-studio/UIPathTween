@@ -10,13 +10,7 @@ namespace ZStudio.UIPathTween {
     public struct UIPathPlaybackOptions {
         public EUIPathCurveMode curveMode;
         public int samplesPerSegment;
-        public float duration;
-        public Ease ease;
-
-        /// <summary>Number of cycles. Use -1 for infinite looping.</summary>
-        public int cycles;
-
-        public CycleMode cycleMode;
+        public TweenSettings tweenSettings;
 
         /// <summary>Move the target to the first point before playing.</summary>
         public bool snapToStart;
@@ -27,8 +21,6 @@ namespace ZStudio.UIPathTween {
         /// <summary>Extra Z rotation applied when <see cref="orient"/> is enabled.</summary>
         public float orientAngleOffset;
 
-        public bool useUnscaledTime;
-
         /// <summary>Called every update with the current path progress in [0,1] (after easing).</summary>
         public Action<float> onUpdate;
 
@@ -38,23 +30,19 @@ namespace ZStudio.UIPathTween {
         public static UIPathPlaybackOptions Default => new() {
             curveMode = EUIPathCurveMode.CatmullRom,
             samplesPerSegment = 16,
-            duration = 0.8f,
-            ease = Ease.Linear,
-            cycles = 1,
-            cycleMode = CycleMode.Restart,
+            tweenSettings = new TweenSettings(0.8f, Ease.Linear),
             snapToStart = true,
             orient = false,
-            orientAngleOffset = 0f,
-            useUnscaledTime = false
+            orientAngleOffset = 0f
         };
 
         internal UIPathPlaybackOptions Normalized() {
             UIPathPlaybackOptions o = this;
-            o.duration = Mathf.Max(0.01f, o.duration);
+            o.tweenSettings.duration = Mathf.Max(0.01f, o.tweenSettings.duration);
             o.samplesPerSegment = Mathf.Clamp(o.samplesPerSegment <= 0 ? 16 : o.samplesPerSegment, 2, 64);
 
-            if (o.cycles == 0) {
-                o.cycles = 1;
+            if (o.tweenSettings.cycles == 0) {
+                o.tweenSettings.cycles = 1;
             }
 
             return o;

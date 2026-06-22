@@ -1508,15 +1508,24 @@ MonoBehaviour:
   - {fileID: 20871053}
   - {fileID: 1745752870}
   m_CurveMode: 2
-  m_Duration: 1.4
-  m_Ease: 4
+  m_TweenSettings:
+    duration: 1.4
+    ease: 4
+    customEase:
+      serializedVersion: 2
+      m_Curve: []
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    cycles: 1
+    cycleMode: 0
+    startDelay: 0
+    endDelay: 0
+    useUnscaledTime: 0
   m_SamplesPerSegment: 24
   m_SnapToStartOnPlay: 1
-  m_Cycles: 1
-  m_CycleMode: 0
   m_Orient: 0
   m_OrientAngleOffset: 0
-  m_UseUnscaledTime: 0
 --- !u!114 &1516072788
 MonoBehaviour:
   m_ObjectHideFlags: 0

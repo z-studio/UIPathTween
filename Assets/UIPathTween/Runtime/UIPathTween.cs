@@ -19,23 +19,13 @@ namespace ZStudio.UIPathTween {
         private EUIPathCurveMode m_CurveMode = EUIPathCurveMode.Bezier;
 
         [SerializeField]
-        private float m_Duration = 0.8f;
-
-        [SerializeField]
-        private Ease m_Ease = Ease.Linear;
+        private TweenSettings m_TweenSettings = new(0.8f, Ease.Linear);
 
         [SerializeField]
         private int m_SamplesPerSegment = 16;
 
         [SerializeField]
         private bool m_SnapToStartOnPlay = true;
-
-        [Tooltip("Number of cycles. Use -1 for infinite looping.")]
-        [SerializeField]
-        private int m_Cycles = 1;
-
-        [SerializeField]
-        private CycleMode m_CycleMode = CycleMode.Restart;
 
         [Tooltip("Rotate the target (Z axis) to face the travel direction.")]
         [SerializeField]
@@ -44,17 +34,13 @@ namespace ZStudio.UIPathTween {
         [SerializeField]
         private float m_OrientAngleOffset;
 
-        [Tooltip("Drive the tween with unscaled time (ignores Time.timeScale).")]
-        [SerializeField]
-        private bool m_UseUnscaledTime;
-
         private Tween m_ActiveTween;
 
         public RectTransform Space => transform as RectTransform;
         public RectTransform Target => m_Target;
         public IReadOnlyList<RectTransform> Waypoints => m_Waypoints;
         public EUIPathCurveMode CurveMode => m_CurveMode;
-        public float Duration => m_Duration;
+        public TweenSettings PlaybackSettings => m_TweenSettings;
         public bool IsPlaying => m_ActiveTween.isAlive;
 
         public List<Vector2> GetControlPoints() {
@@ -184,14 +170,10 @@ namespace ZStudio.UIPathTween {
             return new UIPathPlaybackOptions {
                 curveMode = m_CurveMode,
                 samplesPerSegment = m_SamplesPerSegment,
-                duration = m_Duration,
-                ease = m_Ease,
-                cycles = m_Cycles,
-                cycleMode = m_CycleMode,
+                tweenSettings = m_TweenSettings,
                 snapToStart = m_SnapToStartOnPlay,
                 orient = m_Orient,
-                orientAngleOffset = m_OrientAngleOffset,
-                useUnscaledTime = m_UseUnscaledTime
+                orientAngleOffset = m_OrientAngleOffset
             };
         }
 
@@ -332,17 +314,8 @@ namespace ZStudio.UIPathTween {
             // Use the RectTransform as the tween target so PrimeTween auto-stops the tween when the target is
             // destroyed (it only tracks UnityEngine.Object targets). The captured 'player' costs one closure
             // allocation per Play() call, which is negligible (Play is not a per-frame call).
-            Tween tween = Tween.Custom(
-                target,
-                0f,
-                1f,
-                options.duration,
-                (rt, t) => player.Apply(t),
-                options.ease,
-                options.cycles,
-                options.cycleMode,
-                useUnscaledTime: options.useUnscaledTime
-            );
+            var settings = new TweenSettings<float>(0f, 1f, options.tweenSettings);
+            Tween tween = Tween.Custom(target, settings, (rt, t) => player.Apply(t));
 
             if (options.onComplete != null && tween.isAlive) {
                 tween.OnComplete(options.onComplete);
@@ -359,13 +332,13 @@ namespace ZStudio.UIPathTween {
 
 #if UNITY_EDITOR
         private void OnValidate() {
-            m_Duration = Mathf.Max(0.01f, m_Duration);
+            m_TweenSettings.duration = Mathf.Max(0.01f, m_TweenSettings.duration);
             m_SamplesPerSegment = Mathf.Clamp(m_SamplesPerSegment, 2, 64);
 
-            if (m_Cycles == 0) {
-                m_Cycles = 1;
-            } else if (m_Cycles < -1) {
-                m_Cycles = -1;
+            if (m_TweenSettings.cycles == 0) {
+                m_TweenSettings.cycles = 1;
+            } else if (m_TweenSettings.cycles < -1) {
+                m_TweenSettings.cycles = -1;
             }
         }
 #endif
