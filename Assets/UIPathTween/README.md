@@ -10,7 +10,7 @@
 |------|------|
 | 编辑 | Scene 实时预览；Inspector 内 Scrub / Preview（Edit Mode，非破坏性） |
 | 曲线 | `Linear` / `CatmullRom` / `Bezier`（独立 in/out 切线手柄） |
-| 播放 | 弧长匀速采样；`Ease`、循环 `cycles` / `CycleMode`、`orient`、`useUnscaledTime` |
+| 播放 | 弧长匀速采样；PrimeTween `TweenSettings`（缓动含 Custom 曲线、循环、delay、`useUnscaledTime`）、`orient` |
 | 程序化 | 静态 `Play()` 无需场景 Waypoint；支持 anchored / 世界坐标 / 自定义 Bezier 切线 |
 | 异步 | 可选 UniTask `PlayAsync`（软依赖，未安装时自动跳过编译） |
 
@@ -76,8 +76,7 @@ Canvas
 |----------------|------|
 | Target / Waypoints | 动画目标与路径点（按顺序） |
 | Curve Mode | 推荐 **Bezier**（可调 S 形） |
-| Duration / Ease | 时长与缓动（路径匀速建议 **Linear**） |
-| Cycles / Cycle Mode | 循环次数（`-1` = 无限）与模式 |
+| Tween Settings | 时长、缓动（`Ease.Custom` 可编辑 `AnimationCurve`）、循环（`-1` = 无限）、delay、`useUnscaledTime` 等；路径匀速建议 **Linear** |
 | Orient | 让 Target 朝向前进方向 |
 | Snap To Start On Play | 播放前移到起点 |
 
@@ -122,18 +121,31 @@ await m_Path.PlayAsync(cancellationToken);
 `points` 直接赋给 `target.anchoredPosition`，必须是 **target 父级**的 anchored 坐标：
 
 ```csharp
+using PrimeTween;
+using ZStudio.UIPathTween;
+
 var points = new List<Vector2> {
     from, (from + to) * 0.5f + new Vector2(0f, 160f), to
 };
 
 var options = UIPathPlaybackOptions.Default;
 options.curveMode = EUIPathCurveMode.CatmullRom;
-options.duration = 0.6f;
+options.tweenSettings.duration = 0.6f;
+options.tweenSettings.ease = Ease.OutQuad;
 options.orient = true;
 options.onUpdate = t => { /* t ∈ [0,1] */ };
 options.onComplete = () => Debug.Log("done");
 
 UIPathTween.Play(icon, points, options);
+```
+
+Custom 缓动曲线：
+
+```csharp
+options.tweenSettings = new TweenSettings(0.6f, myAnimationCurve);
+// 或
+options.tweenSettings.ease = Ease.Custom;
+options.tweenSettings.customEase = myAnimationCurve;
 ```
 
 #### 3b. 世界坐标（跨父级飞行）
@@ -191,6 +203,7 @@ Catmull-Rom 切线由 `(P下一個 - P上一個)` 决定，无法单独控制「
 | `Play()` | 实例播放，返回 `Tween`；无效配置时警告并返回 `default` |
 | `Stop()` | 停止当前动画 |
 | `IsPlaying` | 是否正在播放 |
+| `Duration` / `PlaybackSettings` | 当前播放时长 / 完整 `TweenSettings` 配置 |
 | `BuildOptions()` | 导出 Inspector 配置为 `UIPathPlaybackOptions` |
 | `Play(target, points, options)` | 程序化：anchored 坐标 |
 | `Play(target, nodes, options)` | 程序化：自定义 Bezier 切线 |
@@ -205,11 +218,9 @@ Catmull-Rom 切线由 `(P下一個 - P上一個)` 决定，无法单独控制「
 | 字段 | 说明 |
 |------|------|
 | `curveMode` / `samplesPerSegment` | 曲线模式与每段采样数 |
-| `duration` / `ease` | 时长与缓动 |
-| `cycles` / `cycleMode` | 循环（`-1` 无限）与模式 |
+| `tweenSettings` | PrimeTween 播放参数：`duration`、`ease`（含 `customEase`）、`cycles`、`cycleMode`、`startDelay` / `endDelay`、`useUnscaledTime` |
 | `snapToStart` | 播放前移到起点 |
 | `orient` / `orientAngleOffset` | 朝向前进方向 + 角度偏移 |
-| `useUnscaledTime` | 忽略 `Time.timeScale` |
 | `onUpdate(float t)` | 每帧回调，t 为缓动后进度 [0,1] |
 | `onComplete()` | 全部循环结束（无限循环不触发） |
 | `Default` | 推荐默认值 |
@@ -249,10 +260,10 @@ Catmull-Rom 切线由 `(P下一個 - P上一個)` 决定，无法单独控制「
 确认 Target / Waypoint 都是 Path 物体的直接子节点，共用 anchored 坐标系。
 
 **Yoyo 和 Rewind 看起来一样？**  
-`Ease.Linear` 时两者视觉相同；换非 Linear 缓动才能看出区别（缓动作用在路径参数 t 上）。
+Tween Settings 里 `Ease = Linear` 时两者视觉相同；换非 Linear 缓动才能看出区别（缓动作用在路径参数 t 上）。
 
 **动画速度不均匀？**  
-路径已按弧长采样。若仍觉快慢不一，检查 `Ease` 是否为非 Linear。
+路径已按弧长采样。若仍觉快慢不一，检查 Tween Settings 里的 `Ease` 是否为非 Linear。
 
 **没装 UniTask 能用吗？**  
 能。核心 `Play()` 只依赖 PrimeTween；`UIPathTween.Async` 带 `defineConstraints`，无 UniTask 时自动跳过编译。
